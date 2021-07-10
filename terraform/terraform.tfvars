@@ -1,0 +1,5 @@
+project_id       = ""
+gke_general_machine_type = "e2-standard-2"
+region           = "europe-west3"
+location         = "europe-west3-a"
+admin_cidr_block = ""

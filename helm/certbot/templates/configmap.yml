@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: certbot
+  namespace: {{ .Values.namespace }}
+data:
+  run.sh: |
+    #!/bin/sh
+    # Some tome for the k8s service to pick up the job pod
+    sleep 10
+
+    apk --no-cache add curl
+
+    certbot certonly {{ if .Values.test_cert }}--test-cert {{ end }}--standalone --preferred-challenges http{{- range .Values.domains }} -d {{ . }}{{- end}} -m {{ .Values.contact_mail }} -n --agree-tos
+
+    curl -k \
+      --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+      -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"  \
+      -X PUT \
+      -d @- \
+      -H 'Accept: application/json' \
+      -H 'Content-Type: application/json' \
+      https://kubernetes.default.svc/api/v1/namespaces/{{ .Values.namespace }}/secrets/certbot-cert <<- EOF
+      {
+        "kind": "Secret",
+        "apiVersion": "v1",
+        "metadata": {
+          "name": "certbot-cert"
+        },
+         "type": "kubernetes.io/tls",
+        "data": {
+          "tls.crt": "$(base64 /etc/letsencrypt/live/{{ index .Values.domains 0 }}/fullchain.pem)",
+          "tls.key": "$(base64 /etc/letsencrypt/live/{{ index .Values.domains 0 }}/privkey.pem)"
+        }
+      }
+    EOF

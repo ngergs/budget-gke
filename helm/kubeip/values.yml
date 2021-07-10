@@ -1,0 +1,7 @@
+gke:
+  clusterName:
+  ingressNodePoolName:
+  generalNodePoolName:
+kubeIp:
+  forceAssignment: true
+  privateKey:

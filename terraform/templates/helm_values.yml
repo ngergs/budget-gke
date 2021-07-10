@@ -1,0 +1,7 @@
+gke:
+  clusterName: ${gkeClusterName}
+  ingressNodePoolName: ${gkeNodePoolName}
+  generalNodePoolName: ${gkeKubeIpNodePoolName}
+kubeIp:
+  secretName: ${kubeIpKeySecretName}
+  privateKey: ${kubeIpPrivateKey}

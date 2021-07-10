@@ -1,0 +1,10 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: certbot
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: certbot
+spec:
+  schedule: "0 5 1 * *"
+  jobTemplate: {{ include "jobSpec" . | nindent 4 }}

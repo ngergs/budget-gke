@@ -1,0 +1,6 @@
+replicaCount: 1
+mta_sts:
+  mode: testing
+  max_age: "10800"
+  mx_records:
+    - ...

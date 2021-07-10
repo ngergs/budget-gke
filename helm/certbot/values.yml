@@ -1,0 +1,5 @@
+namespace: ingress
+test_cert: false
+domains:
+  - ...
+contact_mail: 

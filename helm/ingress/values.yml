@@ -1,0 +1,28 @@
+replicaCount: 1
+https:
+  enabled: true
+  cert_secret_name: certbot-cert
+  ssl_dhparams_filepath: ssl-dhparams.pem
+  hsts:
+    enabled: false
+    max_age: "10800"
+  expect_ct:
+    enabled: false
+    max_age: "10800"
+domains:
+  - names:
+      - ...
+    http:
+      - path: /.well-known/acme-challenge/
+        service: certbot
+        service_port: 8080
+        namespace: ingress
+        custom_nginx_config: ""
+    https:
+      - path: /.well-known/mta-sts.txt
+        service: mta-sts
+        service_port: 8080
+        namespace: default
+        custom_nginx_config: ""
+gke:
+  ingressNodePoolName: 

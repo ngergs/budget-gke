@@ -1,0 +1,28 @@
+# terraform setup
+
+## Prerequisites
+Besides terraform gcloud (Google Cloud SDK) has to be installed.
+
+## Adjust the variables
+Adjust the variables in terraform.tfvars. The following variables are provided:
+* project_id: Project id of a project on GCP
+* region: region where the Kubernetes cluster will be setup
+* location: location/zone where the Kubernetes cluster will be setup. Has to be a zone the region that has been defined above.
+* admin_cidr_block: CIDR block of IP-addresses that should have access to the Kubernetes admin console.
+
+## Apply:
+If not already logged in via gcloud, login:
+```
+gcloud auth login
+```
+Then apply the terraform script
+```
+terraform init
+terraform apply
+```
+Afterwards you can run the init_kubectl.sh script to initialize kubectl for the created cluster. This script runs:
+```
+#!/bin/bash
+gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw location)
+```
+In the out/helm_values.yml-file some relevant variables are provided as output to be used by some of the helm charts.
