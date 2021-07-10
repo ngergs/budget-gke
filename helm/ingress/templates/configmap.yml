@@ -4,13 +4,18 @@ metadata:
   name: ingress
 data:
   default.conf: |
+    gzip on;
     resolver kube-dns.kube-system.svc.cluster.local valid=30s ipv6=off;
+    log_format combinedHost '$http_x_forwarded_for - $remote_user [$time_local] "$request_method $scheme://$host$request_uri $server_protocol" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time';
+    access_log off;
 
     server {
+      access_log  /var/log/nginx/access.log  combinedHost;
       server_tokens off;
       return 404;
     }
     server {
+      access_log  /var/log/nginx/access.log  combinedHost;
       server_name localhost;
       server_tokens off;
       listen 80 default_server;
@@ -24,6 +29,7 @@ data:
     
 {{- range .Values.domains }}
     server {
+      access_log  /var/log/nginx/access.log  combinedHost;
       server_name{{- range .names }} {{ . }}{{- end }};
       server_tokens off;
       listen 80;
@@ -50,6 +56,7 @@ data:
 
 {{ if $.Values.https.enabled }}
     server {
+      access_log  /var/log/nginx/access.log  combinedHost;
       server_name{{- range .names }} {{ . }}{{- end }};
       server_tokens off;
       listen 443 http2 ssl;
