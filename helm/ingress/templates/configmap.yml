@@ -6,7 +6,7 @@ data:
   default.conf: |
     gzip on;
     resolver kube-dns.kube-system.svc.cluster.local valid=30s ipv6=off;
-    log_format combinedHost '$http_x_forwarded_for - $remote_user [$time_local] "$request_method $scheme://$host$request_uri $server_protocol" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time';
+    log_format combinedHost '$http_x_forwarded_for $remote_addr $remote_user [$time_local] "$request_method $scheme://$host$request_uri $server_protocol" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time';
     access_log off;
 
     server {
@@ -20,6 +20,7 @@ data:
       server_tokens off;
       listen 80 default_server;
       location /health {
+         access_log off;
          return 200;
       }
       location / {
@@ -43,13 +44,7 @@ data:
 {{- end }}
 {{- range .http }}
       location {{ .path }} {
-        set $upstream "http://{{ .service }}.{{ .namespace }}.svc.cluster.local:{{ .service_port }}";
-        proxy_pass $upstream;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        {{ .custom_nginx_config | indent 8 }}
+{{ include "proxyPass" . | indent 8 }}
       }
 {{- end }}
     }
@@ -63,13 +58,7 @@ data:
 
 {{- range .https }}
       location {{ .path }} {
-        set $upstream "http://{{ .service }}.{{ .namespace }}.svc.cluster.local:{{ .service_port }}";
-        proxy_pass $upstream;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        {{ .custom_nginx_config | indent 8 }}
+{{ include "proxyPass" . | indent 8 }}
       }
 {{- end }}
       # SSL settings
