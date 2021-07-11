@@ -27,7 +27,7 @@ data:
          return 404;
       }
     }
-    
+
 {{- range .Values.domains }}
     server {
       access_log  /var/log/nginx/access.log  combinedHost;
@@ -59,6 +59,12 @@ data:
 {{- range .https }}
       location {{ .path }} {
 {{ include "proxyPass" . | indent 8 }}
+{{ if $.Values.https.hsts.enabled }}
+        add_header Strict-Transport-Security "max-age={{ $.Values.https.hsts.max_age }}; includeSubDomains; preload" always;
+{{ end }}
+{{ if $.Values.https.expect_ct.enabled }}
+        add_header Expect-CT "enforce, max-age={{ $.Values.https.expect_ct.max_age }} " always;
+{{ end }}
       }
 {{- end }}
       # SSL settings
@@ -78,14 +84,6 @@ data:
       # OCSP stapling
       ssl_stapling on;
       ssl_stapling_verify on;
-     
-      {{ if $.Values.https.hsts.enabled }}
-      # HSTS
-      add_header Strict-Transport-Security "max-age={{ $.Values.https.hsts.max_age }}; includeSubDomains; preload" always;    
-      {{ end }}
-      {{ if $.Values.https.expect_ct.enabled }}
-      add_header Expect-CT "enforce, max-age={{ $.Values.https.expect_ct.max_age }} " always;
-      {{ end }}
     }
 {{ end }}
 {{ end }}
