@@ -27,6 +27,24 @@ resource "google_service_account" "k8s" {
   display_name = "${var.project_id}-k8s"
 }
 
+resource "google_project_iam_member" "logging-log-writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.k8s.email}"
+}
+
+resource "google_project_iam_member" "monitoring-metric-writer" {
+  project = var.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.k8s.email}"
+}
+
+resource "google_project_iam_member" "monitoring-viewer" {
+  project = var.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.k8s.email}"
+}
+
 # GKE cluster
 resource "google_container_cluster" "primary" {
   project  = var.project_id
