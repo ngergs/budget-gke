@@ -12,6 +12,7 @@ data:
 
       # Actual mta-sts response
       location /health {
+        access_log off;
         return 200;
       }
       location /.well-known/mta-sts.txt {
