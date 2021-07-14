@@ -1,5 +1,5 @@
 {{- define "proxyPass" -}} 
-proxy_buffers 16 16k;  
+proxy_buffers 16 128k;  
 proxy_buffer_size 16k;
 set $upstream "http://{{ .service }}.{{ .namespace }}.svc.cluster.local:{{ .service_port }}";
 proxy_pass $upstream;
