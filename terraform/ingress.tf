@@ -26,7 +26,7 @@ resource "google_container_node_pool" "ingress_nodes" {
     disk_size_gb = 10
     tags         = ["gke-node", "ingress", "${var.project_id}-gke"]
     metadata = {
-      disable-legacy-endpoints = "true"
+      disable-legacy-endpoints = true
     }
     image_type = "COS_CONTAINERD"
     shielded_instance_config {

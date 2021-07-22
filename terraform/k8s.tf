@@ -61,8 +61,8 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  network    = google_compute_network.vpc.name
-  subnetwork = google_compute_subnetwork.subnet.name
+  network            = google_compute_network.vpc.name
+  subnetwork         = google_compute_subnetwork.subnet.name
 
   release_channel {
     channel = var.gke_release_channel
@@ -104,7 +104,7 @@ resource "google_container_node_pool" "primary_nodes" {
     disk_size_gb = 10
     tags         = ["gke-node", "${var.project_id}-gke"]
     metadata = {
-      disable-legacy-endpoints = "true"
+      disable-legacy-endpoints = true
     }
     image_type = "COS_CONTAINERD"
     shielded_instance_config {
@@ -113,8 +113,8 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 
   management {
-    auto_upgrade = "true"
-    auto_repair  = "true"
+    auto_upgrade = true
+    auto_repair  = true
   }
 }
 
