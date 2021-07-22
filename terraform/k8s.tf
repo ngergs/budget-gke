@@ -14,6 +14,10 @@ variable "gke_general_machine_type" {
   default     = "e2-medium"
   description = "machine typoe for the general node pool instances"
 }
+variable "gke_release_channel" {
+  default     = "REGULAR"
+  description = "GKE release channel, one of UNSPECIFIED, RAPID, REGULAR, STABLE"
+}
 
 variable "admin_cidr_block" {
   default     = ""
@@ -57,10 +61,12 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  network            = google_compute_network.vpc.name
-  subnetwork         = google_compute_subnetwork.subnet.name
-  min_master_version = "latest"
+  network    = google_compute_network.vpc.name
+  subnetwork = google_compute_subnetwork.subnet.name
 
+  release_channel {
+    channel = var.gke_release_channel
+  }
   addons_config {
     gce_persistent_disk_csi_driver_config {
       enabled = true
