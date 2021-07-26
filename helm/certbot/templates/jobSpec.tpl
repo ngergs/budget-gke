@@ -4,7 +4,6 @@ spec:
   template:
     metadata:
       name: certbot
-      namespace: {{ .Values.namespace }}
       labels:
         app: certbot
     spec:
