@@ -2,13 +2,18 @@
 
 ## Prerequisites
 Besides terraform gcloud (Google Cloud SDK) has to be installed.
+A key ring and a key have to be setup in KSM to encrypt the etcd database on the Application layer.
 
 ## Adjust the variables
 Adjust the variables in terraform.tfvars. The following variables are provided:
 * project_id: Project id of a project on GCP
 * region: region where the Kubernetes cluster will be setup
 * location: location/zone where the Kubernetes cluster will be setup. Has to be a zone the region that has been defined above.
-* admin_cidr_block: CIDR block of IP-addresses that should have access to the Kubernetes admin console.
+* gke_general_machine_type: The [machine type](https://cloud.google.com/compute/docs/machine-types#predefined_machine_types) used for general node pool
+* gke_release_channel: The release channel the GKE should follow. Allowed valued are RAPID, REGULAR and STABLE.
+* gke_admin_cidr_block: CIDR block of IP-addresses that should have access to the Kubernetes admin console.
+* gke_key_ring_name: KMS key ring name for k8s
+* gke_secrets_key_name: Key encryption key used for decrypting/encrypting the k8s etcd database on the application layer
 
 ## Apply:
 If not already logged in via gcloud, login:

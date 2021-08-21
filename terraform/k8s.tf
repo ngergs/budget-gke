@@ -1,3 +1,6 @@
+data "google_project" "project" {
+  project_id = var.project_id
+}
 data "google_client_config" "k8s" {}
 
 variable "gke_min_node_count" {
@@ -18,12 +21,18 @@ variable "gke_release_channel" {
   default     = "REGULAR"
   description = "GKE release channel, one of UNSPECIFIED, RAPID, REGULAR, STABLE"
 }
-
-variable "admin_cidr_block" {
+variable "gke_admin_cidr_block" {
   default     = ""
   description = "Admin cidr_block for access to the kubernetes master"
 }
-
+variable "gke_key_ring_name" {
+  default     = "k8s"
+  description = "Name for the k8s key ring"
+}
+variable "gke_secrets_key_name" {
+  default     = "k8s"
+  description = "Name for the k8s secret key ring used for secrets encryption"
+}
 
 resource "google_service_account" "k8s" {
   project      = var.project_id
@@ -31,22 +40,42 @@ resource "google_service_account" "k8s" {
   display_name = "${var.project_id}-k8s"
 }
 
-resource "google_project_iam_member" "logging-log-writer" {
+resource "google_project_iam_member" "logging_log_writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${google_service_account.k8s.email}"
 }
 
-resource "google_project_iam_member" "monitoring-metric-writer" {
+resource "google_project_iam_member" "monitoring_metric_writer" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
   member  = "serviceAccount:${google_service_account.k8s.email}"
 }
 
-resource "google_project_iam_member" "monitoring-viewer" {
+resource "google_project_iam_member" "monitoring_viewer" {
   project = var.project_id
   role    = "roles/monitoring.viewer"
   member  = "serviceAccount:${google_service_account.k8s.email}"
+}
+#resource "google_kms_key_ring_iam_member" "crypto_key" {
+#  key_ring_id = data.google_kms_key_ring.k8s.self_link
+#  member      = "serviceAccount:${google_service_account.k8s.email}"
+#  role        = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+#}
+resource "google_kms_crypto_key_iam_member" "crypto_key" {
+  crypto_key_id = data.google_kms_crypto_key.k8s_secret_key.self_link
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
+}
+
+data "google_kms_key_ring" "k8s" {
+  project  = var.project_id
+  location = var.region
+  name     = var.gke_key_ring_name
+}
+data "google_kms_crypto_key" "k8s_secret_key" {
+  name     = var.gke_secrets_key_name
+  key_ring = data.google_kms_key_ring.k8s.self_link
 }
 
 # GKE cluster
@@ -61,8 +90,8 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  network            = google_compute_network.vpc.name
-  subnetwork         = google_compute_subnetwork.subnet.name
+  network    = google_compute_network.vpc.name
+  subnetwork = google_compute_subnetwork.subnet.name
 
   release_channel {
     channel = var.gke_release_channel
@@ -75,10 +104,14 @@ resource "google_container_cluster" "primary" {
 
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block = var.admin_cidr_block
+      cidr_block = var.gke_admin_cidr_block
     }
   }
   enable_shielded_nodes = true
+  database_encryption {
+    state    = "ENCRYPTED"
+    key_name = data.google_kms_crypto_key.k8s_secret_key.self_link
+  }
 }
 
 # Separately Managed Node Pool
