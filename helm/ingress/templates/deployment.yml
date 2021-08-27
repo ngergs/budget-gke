@@ -47,6 +47,8 @@ spec:
             httpGet:
               path: /health
               port: http
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d
@@ -58,6 +60,12 @@ spec:
             - name: ssl-dhparams
               mountPath: /etc/letsencrypt/dhparams
               readOnly: true
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+              readOnly: false
+            - name: var-run
+              mountPath: /var/run
+              readOnly: false
 {{ end }}
       volumes:
         - configMap:
@@ -70,4 +78,9 @@ spec:
         - secret:
             secretName: ssl-dhparams
           name: ssl-dhparams
+        - name: nginx-cache
+          emptyDir: {}
+        # needed to register nginx pid
+        - name: var-run
+          emptyDir: {}
 {{ end }}

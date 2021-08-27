@@ -31,11 +31,24 @@ spec:
             httpGet:
               path: /health
               port: http
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d
               readOnly: true
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+              readOnly: false
+            - name: var-run
+              mountPath: /var/run
+              readOnly: false
       volumes:
         - configMap:
             name: mta-sts
           name: nginx-conf
+        - name: nginx-cache
+          emptyDir: {}
+        # needed to register nginx pid
+        - name: var-run
+          emptyDir: {}
