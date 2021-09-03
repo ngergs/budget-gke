@@ -53,34 +53,50 @@ spec:
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d
               readOnly: true
-{{ if .Values.https.enabled }}
-            - name: tls-cert
-              mountPath: /etc/letsencrypt/cert
-              readOnly: true
-            - name: ssl-dhparams
-              mountPath: /etc/letsencrypt/dhparams
-              readOnly: true
             - name: nginx-cache
               mountPath: /var/cache/nginx
               readOnly: false
             - name: var-run
               mountPath: /var/run
               readOnly: false
+{{ if .Values.https.enabled }}
+            - name: ssl-dhparams
+              mountPath: /etc/letsencrypt/dhparams
+              readOnly: true  
+{{ $tls_secret_volume_mounts := dict }}
+{{- range .Values.domains }}
+{{ if .tls_secret_name }}
+{{ if not (hasKey $tls_secret_volume_mounts .tls_secret_name) }}
+{{ $tls_secret_volume_mounts := set $tls_secret_volume_mounts .tls_secret_name "dummy" }}
+            - name: {{ .tls_secret_name }}
+              mountPath: /etc/letsencrypt/cert/{{ .tls_secret_name }}
+              readOnly: true
+{{ end }}
+{{ end }}
+{{ end }}
 {{ end }}
       volumes:
         - configMap:
             name: ingress
           name: nginx-conf
-{{ if .Values.https.enabled }}
-        - secret:
-            secretName: {{ .Values.https.cert_secret_name }}
-          name: tls-cert
-        - secret:
-            secretName: ssl-dhparams
-          name: ssl-dhparams
         - name: nginx-cache
           emptyDir: {}
         # needed to register nginx pid
         - name: var-run
           emptyDir: {}
+{{ if .Values.https.enabled }}
+        - secret:
+            secretName: ssl-dhparams
+          name: ssl-dhparams
+{{ $tls_secret_volumes := dict }}
+{{- range .Values.domains }}
+{{ if .tls_secret_name }}
+{{ if not (hasKey $tls_secret_volumes .tls_secret_name) }}
+{{ $tls_secret_volumes := set $tls_secret_volumes .tls_secret_name "dummy" }}
+        - secret:
+            secretName: {{ .tls_secret_name }}
+          name: {{ .tls_secret_name }}
+{{ end }}
+{{ end }}
+{{ end }}
 {{ end }}

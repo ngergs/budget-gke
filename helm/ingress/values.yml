@@ -1,7 +1,6 @@
 replicaCount: 1
 https:
   enabled: true
-  cert_secret_name: certbot-cert
   ssl_dhparams_filepath: ssl-dhparams.pem
   hsts:
     enabled: false
@@ -12,6 +11,7 @@ https:
 domains:
   - names:
       - ...
+    tls_secret_name: certbot-cert
     http:
       - path: /.well-known/acme-challenge/
         service: certbot

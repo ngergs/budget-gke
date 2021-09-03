@@ -1,10 +1,8 @@
 {{- define "ssl" -}} 
 # SSL settings
-ssl_certificate /etc/letsencrypt/cert/tls.crt; # managed by Certbot
-ssl_certificate_key /etc/letsencrypt/cert/tls.key; # managed by Certbot
 ssl_dhparam /etc/letsencrypt/dhparams/ssl-dhparams.pem;
 ssl_session_timeout 1d;
-ssl_session_cache shared:SSL:10m;  # about 40000 sessions
+ssl_session_cache shared:{{ .tls_secret_name }}:10m;  # about 40000 sessions
 ssl_session_tickets off;
 
 # ssl config from mozilla https://ssl-config.mozilla.org/

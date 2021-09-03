@@ -5,7 +5,6 @@ Custom Helm chart to deploy a nginx reverse proxy to server as an entry point in
 * replicaCount: number of replicas to deploy
 * https:
   * enabled: Whether the https endpoints are enabled.
-  * cert_secret_name: name of the Kubernetes secret, that holds the TLS certificate. Has to be of type "kubernetes.io/tls".
   * ssl_dhparams_filepath: path for a .pem file that obtains the ssl_dhparams, generate  e.g. via
     ```
     openssl dhparam -out dhparam.pem 4096
@@ -18,6 +17,7 @@ Custom Helm chart to deploy a nginx reverse proxy to server as an entry point in
     * max_age: The max_age for Expect-CT, only relevant if Expect-CT is enabled(see above)
 * domains: Block below is a list
   * names: list(!) of domains for which this configuration block holds
+  * tls_secret_name: name of the Kubernetes secret, that holds the TLS certificate. Has to be of type "kubernetes.io/tls". Can be omitted if https is not used for this domain.
   * http: Also a list
       * path: subpath that should be served via HTTP
       * service: Kubernetes service that should be served under the given subpath
