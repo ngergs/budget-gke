@@ -1,4 +1,6 @@
 test_cert: false
 domains:
-  - ...
-contact_mail: 
+  - common_name:
+    subject_alternative_names:
+    contact_mail: 
+    secret_name: certbot-cert

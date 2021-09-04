@@ -1,7 +1,9 @@
+{{- range .Values.domains }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: certbot
+  name: certbot-{{ .common_name }}
   labels:
-    app: certbot
+    app: certbot-{{ .common_name }}
 {{ include "jobSpec" . }}
+{{ end }}

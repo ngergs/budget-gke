@@ -1,16 +1,17 @@
+{{- range .Values.domains }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: certbot
+  name: certbot-{{ .common_name }}
 data:
   run.sh: |
     #!/bin/sh
-    # Some tome for the k8s service to pick up the job pod
+    # Some time for the k8s service to pick up the job pod
     sleep 10
 
     apk --no-cache add curl
 
-    certbot certonly {{ if .Values.test_cert }}--test-cert {{ end }}--standalone --preferred-challenges http{{- range .Values.domains }} -d {{ . }}{{- end}} -m {{ .Values.contact_mail }} -n --agree-tos
+    certbot certonly {{ if $.Values.test_cert }}--test-cert {{ end }}--standalone --preferred-challenges http -d {{ .common_name }}{{- range .subject_alternative_names }} -d {{ . }}{{- end}} -m {{ .contact_mail }} -n --agree-tos
 
     curl -k \
       --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
@@ -19,7 +20,7 @@ data:
       -d @- \
       -H 'Accept: application/json' \
       -H 'Content-Type: application/json' \
-      https://kubernetes.default.svc/api/v1/namespaces/{{ .Release.Namespace }}/secrets/certbot-cert <<- EOF
+      https://kubernetes.default.svc/api/v1/namespaces/{{ $.Release.Namespace }}/secrets/certbot-cert <<- EOF
       {
         "kind": "Secret",
         "apiVersion": "v1",
@@ -28,8 +29,9 @@ data:
         },
          "type": "kubernetes.io/tls",
         "data": {
-          "tls.crt": "$(base64 /etc/letsencrypt/live/{{ index .Values.domains 0 }}/fullchain.pem)",
-          "tls.key": "$(base64 /etc/letsencrypt/live/{{ index .Values.domains 0 }}/privkey.pem)"
+          "tls.crt": "$(base64 /etc/letsencrypt/live/{{ .common_name }}/fullchain.pem)",
+          "tls.key": "$(base64 /etc/letsencrypt/live/{{ .common_name }}/privkey.pem)"
         }
       }
     EOF
+{{ end }}

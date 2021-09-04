@@ -25,7 +25,7 @@ spec:
              readOnly: true
       volumes:
         - configMap:
-            name: certbot
+            name: certbot-{{ .common_name }}
             defaultMode: 0777
           name: run-script
 {{- end }}

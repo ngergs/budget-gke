@@ -1,9 +1,11 @@
+{{- range .Values.domains }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: certbot
+  name: certbot-{{ .common_name }}
   labels:
-    app: certbot
+    app: certbot-{{ .common_name }}
 spec:
   schedule: "0 5 1 * *"
   jobTemplate: {{ include "jobSpec" . | nindent 4 }}
+{{ end }}
