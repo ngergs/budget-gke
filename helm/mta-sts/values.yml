@@ -1,4 +1,5 @@
 replicaCount: 1
+domain: 
 mta_sts:
   mode: testing
   max_age: "10800"

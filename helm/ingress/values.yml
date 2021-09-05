@@ -1,28 +1,41 @@
-replicaCount: 1
-https:
-  enabled: true
-  ssl_dhparams_filepath: ssl-dhparams.pem
-  hsts:
-    enabled: false
-    max_age: "10800"
-  expect_ct:
-    enabled: false
-    max_age: "10800"
 domains:
-  - names:
-      - ...
-    tls_secret_name: certbot-cert
-    http:
-      - path: /.well-known/acme-challenge/
-        service: certbot
-        service_port: 8080
-        namespace: ingress
-        custom_nginx_config: ""
-    https:
-      - path: /.well-known/mta-sts.txt
-        service: mta-sts
-        service_port: 8080
-        namespace: default
-        custom_nginx_config: ""
-gke:
-  ingressNodePoolName: 
+  - name: 
+    tls_secret: certbot-cert
+
+nginx-ingress:
+  controller:
+    replicaCount: 1
+    hostNetwork: true
+    ingressClass: nginx-kubeip
+    useIngressClassOnly: true
+    nodeSelector: # filled from terraform output
+    tolerations:
+      - key: dedicated
+        operator: Equal
+        value: ingress
+        effect: NoSchedule
+    service:
+      httpsPort:
+        enable: true
+    defaultTLS:
+      secret: ingress/certbot-cert
+    wildcardTLS:
+      secret: ingress/certbot-cert
+    config:
+      entries:
+        proxy-buffering: "True"
+        proxy-buffers: "16 128k"
+        proxy-buffer-size: 16k
+        default-server-return: "444"
+        server-tokens: "False"
+        ssl-redirect: "True"
+        hsts: "False"
+        hsts-max-age: "63072000""
+        hsts-include-subdomains: "True        
+        # ssl config from mozilla https://ssl-config.mozilla.org/
+        # intermediate configuration
+        ssl-protocols: "TLSv1.2 TLSv1.3"
+        ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
+        ssl-prefer-server-ciphers: "False"
+        http2: "True"
+        proxy-protocol: "False"

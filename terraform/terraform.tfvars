@@ -1,7 +1,7 @@
 project_id               = ""
 region                   = "europe-west3"
 location                 = "europe-west3-a"
-gke_general_machine_type = "e2-standard-2"
+gke_general_machine_type = "e2-medium"
 gke_release_channel      = "REGULAR"
 gke_admin_cidr_block     = ""
 gke_key_ring_name        = "k8s"

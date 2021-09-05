@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mta-sts
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+spec:
+  ingressClassName: nginx-kubeip
+  rules:
+  - host: mta-sts.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /.well-known/mta-sts.txt
+        pathType: Exact
+        backend:
+          service:
+            name: mta-sts
+            port:
+              number: 8080
