@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: mta-sts
   annotations:
-    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/mergeable-ingress-type: minion
 spec:
   ingressClassName: nginx-kubeip
   rules:

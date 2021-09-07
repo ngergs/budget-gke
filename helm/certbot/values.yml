@@ -1,6 +1,0 @@
-test_cert: false
-domains:
-  - common_name:
-    subject_alternative_names:
-    contact_mail: 
-    secret_name: certbot-cert

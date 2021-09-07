@@ -1,26 +1,32 @@
+issuer:
+  email:
 domains:
-  - name: 
-    tls_secret: certbot-cert
+  - names:
+    letsencrypt_prod:  false
+    server_snippets:
 
 nginx-ingress:
   controller:
+    setAsDefaultIngress: true
     replicaCount: 1
     hostNetwork: true
     ingressClass: nginx-kubeip
     useIngressClassOnly: true
-    nodeSelector: # filled from terraform output
+    nodeSelector:
     tolerations:
       - key: dedicated
         operator: Equal
         value: ingress
         effect: NoSchedule
     service:
+      httpPort:
+        enable: true
       httpsPort:
         enable: true
     defaultTLS:
-      secret: ingress/certbot-cert
+      secret:
     wildcardTLS:
-      secret: ingress/certbot-cert
+      secret:
     config:
       entries:
         proxy-buffering: "True"
@@ -28,14 +34,47 @@ nginx-ingress:
         proxy-buffer-size: 16k
         default-server-return: "444"
         server-tokens: "False"
-        ssl-redirect: "True"
+        http2: "True"
+        proxy-protocol: "False"
+        # set via server-snippets in the ingress template to allow acme challenge via http
+        ssl-redirect: "False"
         hsts: "False"
-        hsts-max-age: "63072000""
-        hsts-include-subdomains: "True        
+        hsts-max-age: "63072000"
+        hsts-include-subdomains: "True"
+        http-snippets: |
+          ssl_session_timeout 1d;
+          ssl_session_cache shared:SSL:100m;  # about 400000 sessions
+          ssl_session_tickets off;
+
+          # google DNS for OCSP stapling
+          resolver 8.8.8.8 8.8.4.4;
+          # OCSP stapling
+          ssl_stapling on;
+          ssl_stapling_verify on;
         # ssl config from mozilla https://ssl-config.mozilla.org/
         # intermediate configuration
         ssl-protocols: "TLSv1.2 TLSv1.3"
-        ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
+        ssl-ciphers: >
+          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:
+          ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
         ssl-prefer-server-ciphers: "False"
-        http2: "True"
-        proxy-protocol: "False"
+        #use output from generate_openssl_dhparams.sh
+        ssl-dhparam-file:
+        log-format-escaping: json
+        log-format: >
+          {
+            "time":"$msec",
+            "httpRequest":{
+              "requestMethod":"$request_method",
+              "requestUrl":"$scheme://$host$request_uri",
+              "requestSize":$request_length,
+              "status":$status,
+              "responseSize":$bytes_sent,
+              "userAgent":"$http_user_agent",
+              "remoteIp":"$remote_addr",
+              "serverIp":"$server_addr",
+              "referer":"$http_referer",
+              "latency":"${request_time}s",
+              "protocol":"$server_protocol"
+            }
+          }
