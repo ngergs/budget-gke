@@ -40,13 +40,3 @@ resource "google_service_account_key" "kube_ip" {
   service_account_id = google_service_account.kube_ip.name
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
-
-#resource "kubernetes_secret" "kube_ip_key" {
-#  metadata {
-#    name      = local.kubeip_key_name
-#    namespace = "kube-system"
-#  }
-#  binary_data = {
-#    "key.json" = google_service_account_key.kube_ip.private_key
-#  }
-#}

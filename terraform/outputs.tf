@@ -12,11 +12,11 @@ output "location" {
 
 locals {
   helm_values = templatefile("${path.module}/templates/helm_values.yml", {
-    gkeClusterName        = google_container_cluster.primary.name
-    gkeNodePoolName       = google_container_node_pool.ingress_nodes.name
-    gkeKubeIpNodePoolName = google_container_node_pool.primary_nodes.name
-    kubeIpKeySecretName   = local.kubeip_key_name
-    kubeIpPrivateKey      = google_service_account_key.kube_ip.private_key
+    gkeClusterName         = google_container_cluster.primary.name
+    gkeIngressNodePoolName = google_container_node_pool.ingress_nodes.name
+    gkeKubeIpNodePoolName  = google_container_node_pool.primary_nodes.name
+    kubeIpKeySecretName    = local.kubeip_key_name
+    kubeIpPrivateKey       = google_service_account_key.kube_ip.private_key
   })
 }
 

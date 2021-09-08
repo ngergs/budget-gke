@@ -1,11 +1,11 @@
 gke:
   clusterName: ${gkeClusterName}
-  ingressNodePoolName: ${gkeNodePoolName}
+  ingressNodePoolName: ${gkeIngressNodePoolName}
   generalNodePoolName: ${gkeKubeIpNodePoolName}
 nginx-ingress:
   controller:
     nodeSelector:
-      cloud.google.com/gke-nodepool: ${gkeNodePoolName}
+      cloud.google.com/gke-nodepool: ${gkeIngressNodePoolName}
 kubeIp:
   secretName: ${kubeIpKeySecretName}
   privateKey: ${kubeIpPrivateKey}
