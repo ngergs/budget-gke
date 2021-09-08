@@ -2,8 +2,10 @@ issuer:
   email:
 domains:
   - names:
-    letsencrypt_prod:  false
+      common_name:
+      subject_alternative_names:
     server_snippets:
+    letsencrypt_prod: false
 
 nginx-ingress:
   controller:

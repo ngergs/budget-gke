@@ -13,8 +13,10 @@ helm install ingress . -n ingress -f values.yml -f ../../terraform/out/helm_valu
 * issuer:
   * email: E-Mail as contact for LetsEncrypt for relevant informations about certificate renewal etc.
 * domains:
-  * names: List of domain names for which the mergeable ingress configuration shold be setup.
-  * letsencrypt_prod: Boolean whether the LetsEncrypt prod or staging CA should be used.
+  * names: For both common_name and subject_alternative_names a mergeable ingress master is setup. Hence, collisions are not supported.
+    * common_name: The common name of the certificate.
+    * subject_alternative_names: List of subjec alternative names for the certificate. 
+  * letsencrypt_prod: Boolean whether the LetsEncrypt prod or staging CA should be used. The productive LetsEncrypt endpoint issues the actual browser supported certificated, but has rather strict [rate limits](https://letsencrypt.org/docs/rate-limits/) and should not be used for testing purposes.
   * server_snippets: Used to fille the nginx.org/server-snippets annotation of the master ingress configurations.
 * nginx-ingress: See the official nginx-inc documentation. The values.yml provides a set of useful defaults.
   * [Nginx-inc Ingress Helm chart](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/)
