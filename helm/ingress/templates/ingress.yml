@@ -1,9 +1,9 @@
-{{- range .Values.domains }}
-{{ $domain := dict "common_name" .names.common_name "server_snippets" .server_snippets "ingress_class_name" (index $.Values "nginx-ingress" "controller" "ingressClass") }}
-{{ include "ingress" (dict "name" $domain.common_name "common_name" $domain.common_name "server_snippets" $domain.server_snippets "ingress_class_name" $domain.ingress_class_name) }}
+{{- range .Values.domains -}}
+{{- $domain := dict "common_name" .names.common_name "server_snippets" .server_snippets "ingress_class_name" (index $.Values "nginx-ingress" "controller" "ingressClass") -}}
+{{- include "ingress" (dict "name" $domain.common_name "common_name" $domain.common_name "server_snippets" $domain.server_snippets "ingress_class_name" $domain.ingress_class_name)}}
 ---
-{{- range .names.subject_alternative_names }}
-{{ include "ingress" (dict "name" . "common_name" $domain.common_name "server_snippets" $domain.server_snippets "ingress_class_name" $domain.ingress_class_name) }}
+{{- range .names.subject_alternative_names -}}
+{{- include "ingress" (dict "name" . "common_name" $domain.common_name "server_snippets" $domain.server_snippets "ingress_class_name" $domain.ingress_class_name)}}
 ---
-{{ end }}
-{{ end }}
+{{- end}}
+{{- end}}

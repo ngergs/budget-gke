@@ -1,4 +1,4 @@
-{{- range .Values.domains }}
+{{- range .Values.domains -}}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -9,12 +9,12 @@ spec:
   secretName: certbot-{{ .names.common_name }}
   dnsNames: 
     - {{ .names.common_name }} 
-{{- if .names.subject_alternative_names }}
+{{- if .names.subject_alternative_names -}}
 {{ toYaml .names.subject_alternative_names | indent 4 }}
-{{- end }}
+{{- end}}
   issuerRef:
-    name: {{ if .letsencrypt_prod }}  "letsencrypt-prod" {{ else }} "letsencrypt-staging" {{ end }}
+    name: {{ if .letsencrypt_prod -}}  "letsencrypt-prod" {{- else -}} "letsencrypt-staging" {{- end }}
     kind: Issuer
     group: cert-manager.io
 ---
-{{ end }}
+{{- end}}

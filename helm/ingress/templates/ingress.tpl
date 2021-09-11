@@ -17,9 +17,9 @@ metadata:
       if ($redirect = true) {
         return 308 https://$host:443$request_uri;
       }
-{{ if .server_snippets }}
+{{- if .server_snippets -}}
 {{ .server_snippets | indent 6 }}
-{{ end }}
+{{- end}}
 spec:
   ingressClassName: {{ .ingress_class_name }}
   tls:
@@ -28,4 +28,4 @@ spec:
     secretName: certbot-{{ .common_name }}
   rules:
   - host: {{ .name }}
-{{- end }}
+{{- end}}

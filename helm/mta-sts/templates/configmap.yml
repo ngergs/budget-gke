@@ -37,7 +37,7 @@ data:
       }
       location /.well-known/mta-sts.txt {
         default_type text/plain;
-        return 200 "version: STSv1\r\nmode: {{ .Values.mta_sts.mode }}\r\n{{- range .Values.mta_sts.mx_records }}mx: {{ . }}\r\n{{- end}}max_age: {{ .Values.mta_sts.max_age }}\r\n";
+        return 200 "version: STSv1\r\nmode: {{ .Values.mta_sts.mode }}\r\n{{- range .Values.mta_sts.mx_records -}}mx: {{ . }}\r\n{{- end -}}max_age: {{ .Values.mta_sts.max_age }}\r\n";
       }
       location / {
         return 404;
