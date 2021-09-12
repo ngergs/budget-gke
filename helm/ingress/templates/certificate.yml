@@ -6,10 +6,13 @@ metadata:
   annotations:
     cert-manager.io/issue-temporary-certificate: "true"
 spec:
+  privateKey:
+    algorithm: RSA
+    size: 4096
   secretName: certbot-{{ .names.common_name }}
   dnsNames: 
     - {{ .names.common_name }} 
-{{- if .names.subject_alternative_names -}}
+{{if .names.subject_alternative_names -}}
 {{ toYaml .names.subject_alternative_names | indent 4 }}
 {{- end}}
   issuerRef:

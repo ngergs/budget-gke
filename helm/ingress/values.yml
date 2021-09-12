@@ -44,6 +44,11 @@ nginx-ingress:
         hsts-max-age: "63072000"
         hsts-include-subdomains: "True"
         http-snippets: |
+          # secp521r1 not supported by chrome anymore
+          ssl_ecdh_curve secp384r1;
+          # TLSv1.3, more secure, but not RFC 8446 compliant to exclude TLS_AES_128_GCM_SHA256
+          ssl_conf_command Ciphersuites TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256;
+
           ssl_session_timeout 1d;
           ssl_session_cache shared:SSL:100m;  # about 400000 sessions
           ssl_session_tickets off;
@@ -54,13 +59,12 @@ nginx-ingress:
           ssl_stapling on;
           ssl_stapling_verify on;
         # ssl config from mozilla https://ssl-config.mozilla.org/
-        # intermediate configuration
+        # intermediate configuration, with 128 bit key exchanges removed
         ssl-protocols: "TLSv1.2 TLSv1.3"
         ssl-ciphers: >
-          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:
-          ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+          ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES256-GCM-SHA384
         ssl-prefer-server-ciphers: "False"
-        #use output from generate_openssl_dhparams.sh
+        # use output from generate_openssl_dhparams.sh
         ssl-dhparam-file:
         log-format-escaping: json
         log-format: >
