@@ -9,7 +9,7 @@ variable "gke_min_node_count" {
 }
 
 variable "gke_max_node_count" {
-  default     = 2
+  default     = 3
   description = "maximal number of gke nodes"
 }
 
@@ -33,6 +33,16 @@ variable "gke_secrets_key_name" {
   default     = "k8s"
   description = "Name for the k8s secret key ring used for secrets encryption"
 }
+
+variable "gke_istio" {
+  default     = false
+  description = "is istio activated"
+}
+variable "gke_network_policy" {
+  default     = true
+  description = "is network policy enforcement activated"
+}
+
 
 resource "google_service_account" "k8s" {
   project      = var.project_id
@@ -95,7 +105,19 @@ resource "google_container_cluster" "primary" {
     gce_persistent_disk_csi_driver_config {
       enabled = true
     }
+    istio_config {
+      disabled = !var.gke_istio
+      auth     = "AUTH_MUTUAL_TLS"
+    }
+    network_policy_config {
+      disabled = !var.gke_network_policy
+    }
   }
+  network_policy {
+    enabled  = var.gke_network_policy
+    provider = "CALICO"
+  }
+
 
   master_authorized_networks_config {
     cidr_blocks {

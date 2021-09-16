@@ -10,10 +10,14 @@ Adjust the variables in terraform.tfvars. The following variables are provided:
 * region: region where the Kubernetes cluster will be setup
 * location: location/zone where the Kubernetes cluster will be setup. Has to be a zone the region that has been defined above.
 * gke_general_machine_type: The [machine type](https://cloud.google.com/compute/docs/machine-types#predefined_machine_types) used for general node pool
+* gke_min_node_count: Minimal number of node for the general node pool
+* gke_max_node_count: Maximal number of node for the general node pool
 * gke_release_channel: The release channel the GKE should follow. Allowed valued are RAPID, REGULAR and STABLE.
 * gke_admin_cidr_block: CIDR block of IP-addresses that should have access to the Kubernetes admin console.
 * gke_key_ring_name: KMS key ring name for k8s
 * gke_secrets_key_name: Key encryption key used for decrypting/encrypting the k8s etcd database on the application layer
+* gke_istio: Whether the istio service mesh should be enabled
+* gke_network_policy: Whether network policy enforcement via Calico should be enabled
 
 ## Apply:
 If not already logged in via gcloud, login:
