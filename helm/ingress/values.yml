@@ -6,6 +6,14 @@ domains:
       subject_alternative_names:
     server_snippets:
     letsencrypt_prod: false
+    robots:
+      entries:
+        - user_agent: "*"
+          disallow:
+            - /
+          allow:
+      sitemap:
+      replicaCount: 1
 
 nginx-ingress:
   controller:

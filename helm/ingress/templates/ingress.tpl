@@ -28,4 +28,4 @@ spec:
     secretName: certbot-{{ .common_name }}
   rules:
   - host: {{ .name }}
-{{- end}}
+{{- end }}
