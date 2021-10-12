@@ -17,6 +17,8 @@ domains:
 
 nginx-ingress:
   controller:
+    serviceAccount:
+      name: nginx-ingress
     setAsDefaultIngress: true
     replicaCount: 1
     hostNetwork: true

@@ -42,6 +42,10 @@ variable "gke_network_policy" {
   default     = true
   description = "is network policy enforcement activated"
 }
+variable "gke_security_policy" {
+  default     = true
+  description = "is security policy config activated"
+}
 
 
 resource "google_service_account" "k8s" {
@@ -112,6 +116,9 @@ resource "google_container_cluster" "primary" {
     network_policy_config {
       disabled = !var.gke_network_policy
     }
+  }
+  pod_security_policy_config {
+    enabled = var.gke_security_policy
   }
   network_policy {
     enabled  = var.gke_network_policy

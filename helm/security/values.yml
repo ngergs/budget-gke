@@ -1,0 +1,13 @@
+privileged:
+  namespaces:
+    - ingress
+  serviceaccounts:
+    - name: nginx-ingress
+      namespace: ingress
+baseline:
+  namespaces:
+    - default
+    - mayan
+restricted:
+  namespaces:
+    - kube-system
