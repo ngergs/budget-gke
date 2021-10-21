@@ -6,8 +6,7 @@ privileged:
       namespace: ingress
 baseline:
   namespaces:
-    - default
     - mayan
 restricted:
   namespaces:
-    - kube-system
+    - default
