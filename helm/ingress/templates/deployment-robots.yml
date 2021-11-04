@@ -34,6 +34,7 @@ spec:
               path: /health
               port: http
           securityContext:
+            runAsUser: 1000
             readOnlyRootFilesystem: true
           volumeMounts:
             - name: nginx-conf

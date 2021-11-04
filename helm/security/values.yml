@@ -1,6 +1,4 @@
 privileged:
-  namespaces:
-    - ingress
   serviceaccounts:
     - name: nginx-ingress
       namespace: ingress
@@ -10,3 +8,4 @@ baseline:
 restricted:
   namespaces:
     - default
+    - ingress
