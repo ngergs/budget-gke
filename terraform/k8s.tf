@@ -72,7 +72,7 @@ resource "google_project_iam_member" "monitoring_viewer" {
   member  = "serviceAccount:${google_service_account.k8s.email}"
 }
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
-  crypto_key_id = data.google_kms_crypto_key.k8s_secret_key.self_link
+  crypto_key_id = data.google_kms_crypto_key.k8s_secret_key.id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member        = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
 }
@@ -84,7 +84,7 @@ data "google_kms_key_ring" "k8s" {
 }
 data "google_kms_crypto_key" "k8s_secret_key" {
   name     = var.gke_secrets_key_name
-  key_ring = data.google_kms_key_ring.k8s.self_link
+  key_ring = data.google_kms_key_ring.k8s.id
 }
 
 # GKE cluster
@@ -134,7 +134,7 @@ resource "google_container_cluster" "primary" {
   enable_shielded_nodes = true
   database_encryption {
     state    = "ENCRYPTED"
-    key_name = data.google_kms_crypto_key.k8s_secret_key.self_link
+    key_name = data.google_kms_crypto_key.k8s_secret_key.id
   }
 }
 
