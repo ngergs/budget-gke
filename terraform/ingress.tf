@@ -1,3 +1,8 @@
+variable "gke_ingress_machine_type" {
+  default     = "e2-medium"
+  description = "machine typoe for the general node pool instances"
+}
+
 resource "google_compute_address" "ingress" {
   project = var.project_id
   region  = var.region
@@ -22,7 +27,7 @@ resource "google_container_node_pool" "ingress_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
     preemptible  = true
-    machine_type = "e2-micro"
+    machine_type = var.gke_ingress_machine_type
     disk_size_gb = 10
     tags         = ["gke-node", "ingress", "${var.project_id}-gke"]
     metadata = {
@@ -32,13 +37,6 @@ resource "google_container_node_pool" "ingress_nodes" {
     shielded_instance_config {
       enable_secure_boot = true
     }
-    taint = [
-      {
-        key    = "dedicated"
-        value  = "ingress"
-        effect = "NO_SCHEDULE"
-      }
-    ]
   }
 }
 

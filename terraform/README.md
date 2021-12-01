@@ -9,6 +9,7 @@ Adjust the variables in terraform.tfvars. The following variables are provided:
 * project_id: Project id of a project on GCP
 * region: region where the Kubernetes cluster will be setup
 * location: location/zone where the Kubernetes cluster will be setup. Has to be a zone the region that has been defined above.
+* gke_ingress_machine_type: The [machine type](https://cloud.google.com/compute/docs/machine-types#predefined_machine_types) used for ingress node pool
 * gke_general_machine_type: The [machine type](https://cloud.google.com/compute/docs/machine-types#predefined_machine_types) used for general node pool
 * gke_min_node_count: Minimal number of node for the general node pool
 * gke_max_node_count: Maximal number of node for the general node pool
