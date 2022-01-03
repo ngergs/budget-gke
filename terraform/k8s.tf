@@ -101,6 +101,11 @@ resource "google_container_cluster" "primary" {
 
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "pods"
+    services_secondary_range_name = "services"
+  }
+
 
   release_channel {
     channel = var.gke_release_channel
@@ -131,6 +136,12 @@ resource "google_container_cluster" "primary" {
       cidr_block = var.gke_admin_cidr_block
     }
   }
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "192.168.0.16/28"
+  }
+
   enable_shielded_nodes = true
   database_encryption {
     state    = "ENCRYPTED"

@@ -31,6 +31,8 @@ nginx-ingress:
         value: ingress
         effect: NoSchedule
     service:
+      annotations:
+        networking.gke.io/load-balancer-type: Internal
       httpPort:
         enable: true
       httpsPort:
