@@ -46,6 +46,11 @@ spec:
             - name: var-run
               mountPath: /var/run
               readOnly: false
+      tolerations:
+        - key: "pool"
+          operator: "Equal"
+          value: "ingress"
+          effect: "NoSchedule"
       volumes:
         - configMap:
             name: robots-{{ .names.common_name }}

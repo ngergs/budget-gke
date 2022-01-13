@@ -17,6 +17,11 @@ domains:
 
 nginx-ingress:
   controller:
+    tolerations:
+      - key: "pool"
+        operator: "Equal"
+        value: "ingress"
+        effect: "NoSchedule"
     serviceAccount:
       name: nginx-ingress
     setAsDefaultIngress: true
