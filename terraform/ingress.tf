@@ -50,5 +50,6 @@ resource "google_compute_firewall" "ingress" {
     ports    = ["80", "443"]
   }
 
-  target_tags = ["ingress"]
+  target_tags   = ["ingress"]
+  source_ranges = ["0.0.0.0/0"]
 }

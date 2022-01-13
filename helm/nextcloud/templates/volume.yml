@@ -1,0 +1,34 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nextcloud
+provisioner: kubernetes.io/glusterfs
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud
+spec:
+  storageClassName: nextcloud
+  capacity:
+    storage: {{ .Values.volume.data.diskSize }}
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    namespace: {{ .Release.Namespace }}
+    name: nextcloud
+  gcePersistentDisk:
+    pdName: {{ .Values.volume.data.name }}
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud
+spec:
+  storageClassName: nextcloud
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volume.data.diskSize }} 

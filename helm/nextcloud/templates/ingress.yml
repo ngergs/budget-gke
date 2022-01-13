@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud
+  annotations:
+    nginx.org/mergeable-ingress-type: minion
+    nginx.org/client-max-body-size: "0"
+    nginx.org/location-snippets: |
+      sub_filter_once off;
+      sub_filter_types text/javascript application/javascript;
+      add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+
+      gzip on;
+      gzip_proxied any;
+      gzip_types
+        text/css
+        text/javascript
+        text/xml
+        text/plain
+        application/javascript
+        application/x-javascript;
+
+spec:
+  ingressClassName: nginx-kubeip
+  rules:
+  - host: {{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nextcloud
+            port:
+              number: 8080

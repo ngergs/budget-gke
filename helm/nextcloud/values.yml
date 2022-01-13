@@ -1,0 +1,18 @@
+domain:
+volume:
+  data:
+    diskSize: 100G
+    name: nextcloud
+
+nextcloud:
+  mariadb:
+    enabled: false
+  nextcloud:
+    host:  
+  livenessProbe:
+    initialDelaySeconds: 1200
+  persistence:
+    enabled: true
+    storageClass: nextcloud
+    existingClaim: nextcloud
+    size: 100G
