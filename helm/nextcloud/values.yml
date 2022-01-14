@@ -1,18 +1,50 @@
-domain:
+domain: 
 volume:
   data:
     diskSize: 100G
-    name: nextcloud
+    name: nextcloud-app
+  db:
+    diskSize: 10G
+    name: nextcloud-db
 
 nextcloud:
-  mariadb:
-    enabled: false
+  resources:
+    requests:
+      memory: 500Mi
+    limits:
+      memory: 1Gi
   nextcloud:
     host:  
-  livenessProbe:
-    initialDelaySeconds: 1200
+    configs:
+      traefik.config.php: |-
+        <?php
+        $CONFIG = array (
+          'overwritehost' => '',
+          'overwriteprotocol' => 'https'
+          );
+  cronjob:
+    enabled: true
+  mariadb:
+    enabled: true
+    auth:
+      database: nextcloud
+      username: nextcloud
+      password: changeme
+    primary:
+      persistence:
+        enabled: true
+        storageClass: nextcloud
+        existingClaim: nextcloud-db
+        size: 10G
   persistence:
     enabled: true
     storageClass: nextcloud
-    existingClaim: nextcloud
+    existingClaim: nextcloud-app
     size: 100G
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 60
+    failureThreshold: 3
+  readinessProbe:
+    enabled: false

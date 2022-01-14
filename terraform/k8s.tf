@@ -13,6 +13,12 @@ variable "gke_max_node_count" {
   description = "maximal number of gke nodes"
 }
 
+variable "gke_node_disk_size_in_gb" {
+  default     = 10
+  description = "disk space per node in GB"
+}
+
+
 variable "gke_general_machine_type" {
   default     = "e2-medium"
   description = "machine typoe for the general node pool instances"
@@ -106,11 +112,13 @@ resource "google_container_cluster" "primary" {
     services_secondary_range_name = "services"
   }
 
-
   release_channel {
     channel = var.gke_release_channel
   }
   addons_config {
+    http_load_balancing {
+      disabled = true
+    }
     gce_persistent_disk_csi_driver_config {
       enabled = true
     }
@@ -169,7 +177,7 @@ resource "google_container_node_pool" "primary_nodes" {
     ]
     preemptible  = true
     machine_type = var.gke_general_machine_type
-    disk_size_gb = 10
+    disk_size_gb = var.gke_node_disk_size_in_gb
     tags         = ["gke-node", "${var.project_id}-gke"]
     metadata = {
       disable-legacy-endpoints = true
