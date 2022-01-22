@@ -1,11 +1,17 @@
 gke:
   clusterName: ${gkeClusterName}
   ingressNodePoolName: ${gkeIngressNodePoolName}
-  generalNodePoolName: ${gkeKubeIpNodePoolName}
+  primaryNodePoolName: ${gkePrimaryNodePoolName}
 nginx-ingress:
   controller:
     nodeSelector:
       cloud.google.com/gke-nodepool: ${gkeIngressNodePoolName}
+nextcloud:
+  nodeSelector:
+    cloud.google.com/gke-nodepool: ${gkePrimaryNodePoolName}
+  mariadb:
+    primary:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ${gkePrimaryNodePoolName}
 kubeIp:
-  secretName: ${kubeIpKeySecretName}
   privateKey: ${kubeIpPrivateKey}

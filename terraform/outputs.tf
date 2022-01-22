@@ -14,7 +14,7 @@ locals {
   helm_values = templatefile("${path.module}/templates/helm_values.yml", {
     gkeClusterName         = google_container_cluster.primary.name
     gkeIngressNodePoolName = google_container_node_pool.ingress_nodes.name
-    gkeKubeIpNodePoolName  = google_container_node_pool.primary_nodes.name
+    gkePrimaryNodePoolName = google_container_node_pool.primary_nodes.name
     kubeIpPrivateKey       = google_service_account_key.kube_ip.private_key
   })
 }

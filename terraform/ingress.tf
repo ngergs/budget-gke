@@ -22,11 +22,6 @@ resource "google_container_node_pool" "ingress_nodes" {
   node_count = 1
 
   node_config {
-    taint = [{
-      key    = "pool"
-      value  = "ingress"
-      effect = "NO_SCHEDULE"
-    }]
     service_account = google_service_account.k8s.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
