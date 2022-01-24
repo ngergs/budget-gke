@@ -12,6 +12,8 @@ metadata:
       sub_filter_types text/javascript application/javascript;
       add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
 
+      client_body_buffer_size 50M;
+
       gzip on;
       gzip_proxied any;
       gzip_types
