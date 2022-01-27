@@ -8,6 +8,9 @@ helm install cert-manager jetstack/cert-manager -f values-cert-manager.yml
 helm install ingress . -n ingress -f values.yml -f ../../terraform/out/helm_values.yml
 ```
 
+## Server snippets
+Our whole setup uses server snippets in various ways. This is ok in the context of a single-user dev-cluster, but may carry significant security risks for setups that involve more users.
+However, for those more serious setups this whole project is not really the right fit. For details regarding the security risks see [this github issue](https://github.com/kubernetes/ingress-nginx/issues/7837).
 
 ## Variables
 * issuer:

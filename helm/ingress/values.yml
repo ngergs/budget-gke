@@ -14,14 +14,12 @@ domains:
           allow:
       sitemap:
       replicaCount: 1
-
 nginx-ingress:
   controller:
-    tolerations:
-      - key: "pool"
-        operator: "Equal"
-        value: "ingress"
-        effect: "NoSchedule"
+    # enabling snippets is associated with security risks. 
+    # enabling them without further precautions is ok for this project as we focus one a single-user dev cluster.
+    # for details see https://github.com/kubernetes/ingress-nginx/issues/7837
+    enableSnippets: true
     serviceAccount:
       name: nginx-ingress
     setAsDefaultIngress: true
@@ -29,12 +27,6 @@ nginx-ingress:
     hostNetwork: true
     ingressClass: nginx-kubeip
     useIngressClassOnly: true
-    nodeSelector:
-    tolerations:
-      - key: dedicated
-        operator: Equal
-        value: ingress
-        effect: NoSchedule
     service:
       annotations:
         networking.gke.io/load-balancer-type: Internal
