@@ -3,56 +3,10 @@ kind: ConfigMap
 metadata:
   name: mta-sts
 data:
-  mta-sts.conf: |
-    log_format json_combined escape=json
-    '{'
-      '"time":"$msec",'
-      '"httpRequest":{'
-        '"requestMethod":"$request_method",'
-        '"requestUrl":"$scheme://$host$request_uri",'
-        '"requestSize":$request_length,'
-        '"status":$status,'
-        '"responseSize":$bytes_sent,'
-        '"userAgent":"$http_user_agent",'
-        '"remoteIp":"$remote_addr",'
-        '"serverIp":"$server_addr",'
-        '"referer":"$http_referer",'
-        '"latency":"${request_time}s",'
-        '"protocol":"$server_protocol"'
-      '}'
-    '}';
-    access_log off;
-
-    server {
-      server_name _;
-      server_tokens off;
-      listen [::]:8080 ipv6only=on;
-      listen 8080;
-      access_log  /var/log/nginx/access.log  json_combined;
-
-      # Actual mta-sts response
-      location /health {
-        access_log off;
-        return 200;
-      }
-      location /.well-known/mta-sts.txt {
-        default_type text/plain;
-        return 200 "version: STSv1\r\nmode: {{ .Values.mta_sts.mode }}\r\n{{- range .Values.mta_sts.mx_records -}}mx: {{ . }}\r\n{{- end -}}max_age: {{ .Values.mta_sts.max_age }}\r\n";
-      }
-      location / {
-        return 404;
-      }
-
-      # Security Headers
-      add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'; form-action 'none';  font-src 'none'; img-src 'none'; script-src 'none'; style-src 'none'; worker-src 'none'" always;
-      add_header X-XSS-Protection "1; mode=block" always;
-      add_header X-Frame-Options "deny" always;
-      add_header X-Content-Type-Options "nosniff" always;
-      add_header Referrer-Policy "no-referrer" always;
-      add_header Permissions-Policy "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(self),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(self),execution-while-out-of-viewport=(self),fullscreen=(self),geolocation=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()" always;
-      add_header Cross-Origin-Embedder-Policy "require-corp" always;
-      add_header Cross-Origin-Opener-Policy "same-origin" always;
-      add_header Cross-Origin-Resource-Policy "same-site" always;
-      add_header Cache-Control "no-cache, no-store,must-revalidate" always;
-      add_header Pragma "no-cache" always;
-    }
+  mta-sts.txt: |
+    version: STSv1
+    mode: {{ .Values.mta_sts.mode }}
+    {{- range .Values.mta_sts.mx_records }}
+    mx: {{ . }}
+    {{- end }}
+    max_age: {{ .Values.mta_sts.max_age }}
