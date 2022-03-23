@@ -37,6 +37,12 @@ resource "google_container_node_pool" "ingress_nodes" {
     shielded_instance_config {
       enable_secure_boot = true
     }
+    linux_node_config {
+      sysctls = {
+        "net.core.rmem_max" = "2500000"
+        "net.core.wmem_max" = "2500000"
+      }
+    }
   }
 }
 
@@ -48,6 +54,19 @@ resource "google_compute_firewall" "ingress" {
   allow {
     protocol = "tcp"
     ports    = ["80", "443"]
+  }
+
+  target_tags   = ["ingress"]
+  source_ranges = ["0.0.0.0/0"]
+}
+resource "google_compute_firewall" "ingress_quic" {
+  project = var.project_id
+  name    = "ingress-quic"
+  network = google_compute_network.vpc.name
+
+  allow {
+    protocol = "udp"
+    ports    = ["443"]
   }
 
   target_tags   = ["ingress"]
