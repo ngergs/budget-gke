@@ -1,7 +1,3 @@
-locals {
-  kubeip_key_name = "kubeip-key"
-}
-
 resource "google_project_iam_custom_role" "kube_ip" {
   project     = var.project_id
   role_id     = "kubeip"

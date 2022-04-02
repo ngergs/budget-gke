@@ -3,6 +3,11 @@ data "google_project" "project" {
 }
 data "google_client_config" "k8s" {}
 
+variable "linkerd_fw_rule" {
+  default     = false
+  description = "Whether to add a firewall rule to allow the control plane to reach the linkerd mutating admission controller pods"
+}
+
 variable "gke_min_node_count" {
   default     = 1
   description = "minimal number of gke nodes"
@@ -45,11 +50,11 @@ variable "gke_istio" {
   description = "is istio activated"
 }
 variable "gke_network_policy" {
-  default     = true
+  default     = false
   description = "is network policy enforcement activated"
 }
 variable "gke_security_policy" {
-  default     = true
+  default     = false
   description = "is security policy config activated"
 }
 
@@ -200,3 +205,18 @@ provider "kubernetes" {
   token                  = data.google_client_config.k8s.access_token
   cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth.0.cluster_ca_certificate)
 }
+
+resource "google_compute_firewall" "linkerd" {
+  count   = var.linkerd_fw_rule ? 1 : 0
+  project = var.project_id
+  name    = "linkerd"
+  network = google_compute_network.vpc.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8443", "8089"]
+  }
+
+  source_ranges = ["192.168.0.16/28"]
+}
+
