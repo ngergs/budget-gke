@@ -26,7 +26,7 @@ resource "google_container_node_pool" "ingress_nodes" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
-    preemptible  = false
+    preemptible  = true
     machine_type = var.gke_ingress_machine_type
     disk_size_gb = 10
     tags         = ["gke-node", "ingress", "${var.project_id}-gke"]

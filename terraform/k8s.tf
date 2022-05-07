@@ -109,7 +109,7 @@ resource "google_container_cluster" "primary" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
-
+  
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
   ip_allocation_policy {
@@ -138,10 +138,10 @@ resource "google_container_cluster" "primary" {
   pod_security_policy_config {
     enabled = var.gke_security_policy
   }
-  network_policy {
-    enabled  = var.gke_network_policy
-    provider = "CALICO"
-  }
+#  network_policy {
+#    enabled  = var.gke_network_policy
+#    provider = "CALICO"
+#  }
 
 
   master_authorized_networks_config {
