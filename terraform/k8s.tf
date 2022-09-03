@@ -23,36 +23,56 @@ variable "gke_node_disk_size_in_gb" {
   description = "disk space per node in GB"
 }
 
+variable "gke_node_disk_type" {
+  default     = "pd-standard"
+  description = "node disk type"
+}
 
 variable "gke_general_machine_type" {
   default     = "e2-medium"
   description = "machine typoe for the general node pool instances"
 }
+
 variable "gke_release_channel" {
   default     = "REGULAR"
   description = "GKE release channel, one of UNSPECIFIED, RAPID, REGULAR, STABLE"
 }
+
+variable "gke_min_master_version" {
+  default     = "1.24"
+  description = "Minimal k8s version"
+}
+
 variable "gke_admin_cidr_block" {
   default     = ""
   description = "Admin cidr_block for access to the kubernetes master"
 }
+
 variable "gke_key_ring_name" {
   default     = "k8s"
   description = "Name for the k8s key ring"
 }
+
 variable "gke_secrets_key_name" {
   default     = "k8s"
   description = "Name for the k8s secret key ring used for secrets encryption"
+}
+
+variable "dns_cache" {
+  default     = true
+  description = "is local dns caching activated"
 }
 
 variable "gke_istio" {
   default     = false
   description = "is istio activated"
 }
+
 variable "gke_network_policy" {
   default     = false
   description = "is network policy enforcement activated"
 }
+
 variable "gke_security_policy" {
   default     = false
   description = "is security policy config activated"
@@ -100,6 +120,7 @@ data "google_kms_crypto_key" "k8s_secret_key" {
 
 # GKE cluster
 resource "google_container_cluster" "primary" {
+  provider = google-beta
   project  = var.project_id
   name     = "${var.project_id}-gke"
   location = var.location
@@ -109,7 +130,7 @@ resource "google_container_cluster" "primary" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
-  
+
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
   ip_allocation_policy {
@@ -120,7 +141,12 @@ resource "google_container_cluster" "primary" {
   release_channel {
     channel = var.gke_release_channel
   }
+  min_master_version = var.gke_min_master_version
+
   addons_config {
+    dns_cache_config {
+      enabled = var.dns_cache
+    }
     http_load_balancing {
       disabled = true
     }
@@ -138,10 +164,10 @@ resource "google_container_cluster" "primary" {
   pod_security_policy_config {
     enabled = var.gke_security_policy
   }
-#  network_policy {
-#    enabled  = var.gke_network_policy
-#    provider = "CALICO"
-#  }
+  #  network_policy {
+  #    enabled  = var.gke_network_policy
+  #    provider = "CALICO"
+  #  }
 
 
   master_authorized_networks_config {
@@ -183,6 +209,7 @@ resource "google_container_node_pool" "primary_nodes" {
     preemptible  = true
     machine_type = var.gke_general_machine_type
     disk_size_gb = var.gke_node_disk_size_in_gb
+    disk_type    = var.gke_node_disk_type
     tags         = ["gke-node", "primary", "${var.project_id}-gke"]
     metadata = {
       disable-legacy-endpoints = true

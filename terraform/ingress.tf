@@ -4,15 +4,17 @@ variable "gke_ingress_machine_type" {
 }
 
 resource "google_compute_address" "ingress" {
-  project = var.project_id
-  region  = var.region
-  name    = "ingress-adress"
+  provider = google-beta
+  project  = var.project_id
+  region   = var.region
+  name     = "ingress-adress"
   labels = {
     kubeip = google_container_cluster.primary.name
   }
 }
 
 resource "google_container_node_pool" "ingress_nodes" {
+  provider       = google-beta
   project        = var.project_id
   name           = "${google_container_cluster.primary.name}-ingress-node-pool"
   location       = var.location
@@ -28,6 +30,7 @@ resource "google_container_node_pool" "ingress_nodes" {
     ]
     preemptible  = true
     machine_type = var.gke_ingress_machine_type
+    disk_type    = var.gke_node_disk_type
     disk_size_gb = 10
     tags         = ["gke-node", "ingress", "${var.project_id}-gke"]
     metadata = {
